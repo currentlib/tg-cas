@@ -1,0 +1,23 @@
+{
+  "name": "tg-cas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/currentlib/tg-cas.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/currentlib/tg-cas/issues"
+  },
+  "homepage": "https://github.com/currentlib/tg-cas#readme",
+  "dependencies": {
+    "lowdb": "^1.0.0",
+    "telegraf": "^3.37.0"
+  }
+}
