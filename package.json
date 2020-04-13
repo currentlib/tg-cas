@@ -25,6 +25,7 @@
   "homepage": "https://github.com/currentlib/tg-cas#readme",
   "dependencies": {
     "lowdb": "^1.0.0",
+    "mongodb": "^3.5.5",
     "nodemon": "^2.0.3",
     "telegraf": "^3.37.0"
   }

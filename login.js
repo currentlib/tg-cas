@@ -1,8 +1,21 @@
-const low       = require('lowdb')
-const FileSync  = require("lowdb/adapters/FileSync")
+const MongoClient   = require("mongodb").MongoClient
+const assert        = require("assert")
 
-const adapter = new FileSync('db.json')
-const db = low(adapter)
+var db        = undefined
+var dbUrl           = "mongodb://127.0.0.1:27017"
+var dbName          = "casino"
+MongoClient.connect(dbUrl, { useUnifiedTopology: true },function(err, client) {
+    if (err) {
+        throw err
+    } else {
+        console.log("MongoDB connection successful")
+        db = client.db(dbName)
+        insertDocuments(db, function() {
+            client.close() 
+        })       
+    }
+});
+
 
 function registrationCheck(userId) {
     let userToCheck = db.get("user").find({ id: userId}).value()
@@ -44,8 +57,23 @@ function generateUsers() {
 }
 
 
+const insertDocuments = function (db, callback) {
+    const collection = db.collection('users');
+    collection.insertMany([{a: 1}, {a: 2}, {a: 3}],
+        function(err, result) {
+            assert.equal(err, null)
+            assert.equal(3, result.result.n)
+            assert.equal(3, result.ops.length)
+            console.log("Inserted 3 documents into the collection")
+            callback(result)
+        })
+}
+
 module.exports.onStart = function (message) {
-    //generateUsers()
+
+    
+
+    /*//generateUsers()
     if (registrationCheck(message.from.id)) {
         registration(message.from)
         return `Registration completed
@@ -59,5 +87,5 @@ module.exports.onStart = function (message) {
         Username: ${message.from.username}
         First name: ${message.from.first_name}
         Last name: ${message.from.last_name}`
-    }
+    }*/
 }
