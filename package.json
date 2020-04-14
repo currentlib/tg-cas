@@ -26,6 +26,7 @@
   "dependencies": {
     "lowdb": "^1.0.0",
     "mongodb": "^3.5.5",
+    "mongoose": "^5.9.9",
     "nodemon": "^2.0.3",
     "telegraf": "^3.37.0"
   }
