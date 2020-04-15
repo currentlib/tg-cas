@@ -13,6 +13,7 @@ bot.start((ctx) => {
 
 
 bot.command("test", (ctx) => {
+  gamesdb.addPlayer(ctx.update.message.from.id)
   //login.changeUsersMoney(ctx.update.message.from.id, -15)
   //ctx.reply(ctx.update.message.text)
   //gamesdb.initDB()
