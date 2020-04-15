@@ -33,7 +33,6 @@ let User = mongoose.model('User', userSchema);
 //Check is user registered
 //If user not registered call 'callback_InsertUser' else call 'callback_UserRegistered'
 function isUserExist(id, callback_InsertUser, callback_UserRegistered) {
-  console.log("In isUserExist");
   User.find({ id: id}, function(err, data) {
     if (data.length == 0) {
       callback_InsertUser();
@@ -74,27 +73,38 @@ async function changeUsersMoney(id, money) {
 async function ifEnoghMoney(id, money, callback_Enough, callback_NotEnough) {
   if (money < 0) {
     let doc = await User.findOne({ "id": id });
-    (doc.money > money) ? callback_Enough() : callback_NotEnough();
+    (doc.money > Math.abs(money)) ? callback_Enough() : callback_NotEnough();
   } else {
     callback_Enough()
   }
 }
 
+//Get user id by username
+module.exports.userInfo = function (ctx, username) {
+  User.findOne({ "username": username}, function(err, data) {
+    bot.sendMessage(ctx, `${username}: ${data}`);
+  });
+}
+
 //Run this function on '/start' command
 module.exports.onStart = function (ctx) {
   isUserExist(ctx.update.message.from.id, ()=> {
-    insertUser(ctx.update.message.from, ()=> {
-      bot.sendMessage(ctx, "Welcome new user!")
-    })
+    if (ctx.update.message.from.username != undefined) {
+      insertUser(ctx.update.message.from, ()=> {
+        bot.sendMessage(ctx, "Welcome new user!")
+      })
+    } else {
+      bot.sendMessage(ctx, "Set username in profile, please! I need it to identfy you :)")
+    }
   }, ()=> {
     bot.sendMessage(ctx, "User already registered!")
   })
 }
 
-module.exports.changeUsersMoney = function (id, money) {
+module.exports.changeUsersMoney = function (ctx, idToAdd, money) {
   //changeUsersMoney(id, money);
-  ifEnoghMoney(id, Math.abs(money), () => {
-    changeUsersMoney(id, money)
+  ifEnoghMoney(idToAdd, money, () => {
+    changeUsersMoney(idToAdd, money)
   }, ()=> {
     console.log("Not enough money")
   })
