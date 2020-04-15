@@ -1,6 +1,6 @@
 const low   = require("lowdb")
 const FileSync = require("lowdb/adapters/FileSync")
-const test = require("./db.json")
+const bot = require("./index.js")
 
 const adapter = new FileSync('db.json')
 const db = low(adapter)
@@ -30,7 +30,7 @@ function testfunc(){
 function addPlayerToRoom(id) {
     let isPlayer = isPlayerInRoom(id);
 
-    if (!isPlayer) {
+    if (!isPlayer.is) {
         for (let i=0; i<db.get("dice").value().length; i++) {
             let room = db.get("dice").value()[i]
             if (room.players.length < 5) {
@@ -38,9 +38,12 @@ function addPlayerToRoom(id) {
                 players.push(id);
                 db.get("dice").find({id: i}).update({'players': p => p=players}).write()
                 console.log(`Player ID: ${id} added in room ${i}`)
+                //bot.sendMessage(`You are added in room ${i} with ${players.length-1} other players.`)
                 return true
             }
         }
+    } else {
+        //bot.sendMessage(`You are already in room ${isPlayer.room}`)
     }
 }
 
@@ -48,7 +51,7 @@ function addPlayerToRoom(id) {
 function removePlayerFromRoom(id) {
     let isPlayer = isPlayerInRoom(id);
 
-    if(isPlayer) {
+    if(isPlayer.is) {
         for (let i=0; i<db.get("dice").value().length; i++) {
             let room = db.get("dice").value()[i]
             if (room.players.length < 5) {
@@ -56,6 +59,7 @@ function removePlayerFromRoom(id) {
                 players.remove(id);
                 db.get("dice").find({id: i}).update({'players': p => p=players}).write()
                 console.log(`Player ID: ${id} removed from room ${i}`)
+                //bot.sendMessage(`You are removed from room ${i}.`)
                 return true
             }
         }
@@ -63,14 +67,14 @@ function removePlayerFromRoom(id) {
 }
 
 function isPlayerInRoom(id) {
-    let ret = false;
+    let ret = {is: false, room: 0};
     let msg = `Player ID: ${id} does not exist in any room.`
     for (let i=0; i<db.get("dice").value().length; i++) {
         let players = db.get("dice").find({id: i}).value().players;
         players.forEach((player)=> {
             if (player == id) {
                 msg = `Player ID: ${id} exist in room ${i}`
-                ret = true;
+                ret = {is: true, room: i};
             }
         })
     }
@@ -87,9 +91,11 @@ module.exports.initDice = function (num) {
 }
 
 module.exports.addPlayer = function(id) {
-    //removePlayerFromRoom(id)
     addPlayerToRoom(id)
-    //testfunc();
+}
+
+module.exports.removePlayer = function(id) {
+    removePlayerFromRoom(id)
 }
 
 Array.prototype.remove = function() {

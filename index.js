@@ -13,13 +13,18 @@ bot.start((ctx) => {
 
 
 bot.command("test", (ctx) => {
-  gamesdb.addPlayer(ctx.update.message.from.id)
+  gamesdb.removePlayer(ctx.update.message.from.id)
   //login.changeUsersMoney(ctx.update.message.from.id, -15)
   //ctx.reply(ctx.update.message.text)
   //gamesdb.initDB()
   //this.sendDice(ctx);
   //ctx.replyWithDice().then((data)=> {console.log(data.dice.value)});
 });
+
+bot.command("playDice", (ctx) => {
+  gamesdb.addPlayer(ctx.update.message.from.id)
+})
+
 
 
 /**************** ADMIN COMMANDS ****************/
@@ -73,11 +78,6 @@ bot.command("addMoney", (ctx) => {
 /**************** END ADMIN COMMANDS ****************/
 
 
-bot.command("playDice", (ctx) => {
-
-})
-
-
 function printNumber(number) {
   console.log(number);
 }
@@ -94,7 +94,7 @@ bot.launch()
 
 
 module.exports.sendMessage = function (ctx, msg) {
-  ctx.reply(msg);
+  ctx.reply(ctx, msg);
 }
 
 module.exports.sendDice = function (ctx) {
