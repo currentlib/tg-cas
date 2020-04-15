@@ -13,38 +13,31 @@ bot.start((ctx) => {
 
 
 bot.command("test", (ctx) => {
-  login.changeUsersMoney(ctx.update.message.from.id, -15)
-  ctx.reply(ctx.update.message.text)
+  //login.changeUsersMoney(ctx.update.message.from.id, -15)
+  //ctx.reply(ctx.update.message.text)
   //gamesdb.initDB()
   //this.sendDice(ctx);
   //ctx.replyWithDice().then((data)=> {console.log(data.dice.value)});
 });
 
 
-bot.command("addMoney", (ctx) => {
-  let msg = ctx.update.message.text.split(" ");
-  if (msg.length == 2) {
-    console.log("Adding " + msg[1] + " for user " + ctx.update.message.from.username)
-    login.changeUsersMoney(ctx, ctx.update.message.from.id, parseInt(msg[1], 10))
-  } else if (msg.length == 3) {
-    console.log("Adding " + msg[2] + " for user " + msg[1])
-    login.changeUsersMoney(ctx, msg[1], parseInt(msg[2], 10))
-  } else {
-    ctx.reply("Wrong command or parameters! '/addMoney <money>' or '/addMoney <userId> <money>'")
-  }
-})
+/**************** ADMIN COMMANDS ****************/
 
-
+//Init dice rooms
 bot.command("initDice", (ctx) => {
-  let msg = ctx.update.message.text.split(" ")
-  if (msg.length == 2) {
-    gamesdb.initDice(parseInt(ctx.update.message.text.split(" ")[1], 10))
+  if (isAdmin(ctx.update.message.from.id)) {
+    let msg = ctx.update.message.text.split(" ")
+    if (msg.length == 2) {
+      gamesdb.initDice(parseInt(ctx.update.message.text.split(" ")[1], 10))
+    } else {
+      ctx.reply("Wrong command or parameters! '/initDice <number of rooms>'")
+    }
   } else {
-    ctx.reply("Wrong command or parameters! '/initDice <number of rooms>'")
+    ctx.reply("You are not admin!")
   }
 })
 
-
+//Get info about user
 bot.command("userInfo", (ctx) => {
   if (isAdmin(ctx.update.message.from.id)) {
     let msg = ctx.update.message.text.split(" ")
@@ -57,6 +50,26 @@ bot.command("userInfo", (ctx) => {
     ctx.reply("You are not admin!")
   }
 })
+
+//Add money to user acount
+bot.command("addMoney", (ctx) => {
+  if (isAdmin(ctx.update.message.from.id)) {
+    let msg = ctx.update.message.text.split(" ");
+    if (msg.length == 2) {
+      console.log("Adding " + msg[1] + " for user " + ctx.update.message.from.username)
+      login.changeUsersMoney(ctx, ctx.update.message.from.id, parseInt(msg[1], 10))
+    } else if (msg.length == 3) {
+      console.log("Adding " + msg[2] + " for user " + msg[1])
+      login.changeUsersMoney(ctx, msg[1], parseInt(msg[2], 10))
+    } else {
+      ctx.reply("Wrong command or parameters! '/addMoney <money>' or '/addMoney <userId> <money>'")
+    }
+  } else {
+    ctx.reply("You are not admin!")
+  }
+})
+
+/**************** END ADMIN COMMANDS ****************/
 
 
 bot.command("playDice", (ctx) => {
