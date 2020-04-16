@@ -79,10 +79,20 @@ async function ifEnoghMoney(id, money, callback_Enough, callback_NotEnough) {
   }
 }
 
+
+//Get username by id
+module.exports.getUserById = function (id, user, callback) {
+  User.findOne({ "id": id}, function(err, data) {
+    user = data;
+    callback();
+  });
+}
+
+
 //Get user id by username
 module.exports.userInfo = function (ctx, username) {
   User.findOne({ "username": username}, function(err, data) {
-    bot.sendMessage(ctx.update.message.from.id, `${username}: ${data}`);
+    bot.sendMessage(ctx, `${username}: ${data}`);
   });
 }
 
@@ -91,13 +101,13 @@ module.exports.onStart = function (ctx) {
   isUserExist(ctx.update.message.from.id, ()=> {
     if (ctx.update.message.from.username != undefined) {
       insertUser(ctx.update.message.from, ()=> {
-        bot.sendMessage(ctx.update.message.from.id, "Welcome new user!")
+        bot.sendMessage(ctx, "Welcome new user!")
       })
     } else {
-      bot.sendMessage(ctx.update.message.from.id, "Set username in profile, please! I need it to identfy you :)")
+      bot.sendMessage(ctx, "Set username in profile, please! I need it to identfy you :)")
     }
   }, ()=> {
-    bot.sendMessage(ctx.update.message.from.id, "User already registered!")
+    bot.sendMessage(ctx, "User already registered!")
   })
 }
 

@@ -12,13 +12,8 @@ bot.start((ctx) => {
 })
 
 
-bot.command("test", (ctx) => {
+bot.command("exitDice", (ctx) => {
   gamesdb.removePlayer(ctx.update.message.from.id)
-  //login.changeUsersMoney(ctx.update.message.from.id, -15)
-  //ctx.reply(ctx.update.message.text)
-  //gamesdb.initDB()
-  //this.sendDice(ctx);
-  //ctx.replyWithDice().then((data)=> {console.log(data.dice.value)});
 });
 
 bot.command("playDice", (ctx) => {
@@ -94,7 +89,11 @@ bot.launch()
 
 
 module.exports.sendMessage = function (ctx, msg) {
-  ctx.reply(ctx, msg);
+  ctx.reply(msg);
+}
+
+module.exports.sendMessageById = function (id, msg) {
+  bot.telegram.sendMessage(id, msg)
 }
 
 module.exports.sendDice = function (ctx) {

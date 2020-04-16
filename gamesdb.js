@@ -1,6 +1,7 @@
 const low   = require("lowdb")
 const FileSync = require("lowdb/adapters/FileSync")
 const bot = require("./index.js")
+const login = require("./login.js")
 
 const adapter = new FileSync('db.json')
 const db = low(adapter)
@@ -21,13 +22,9 @@ async function initDice(roomsNumber) {
         await newRoom()
     }
 }
-  
 
-function testfunc(){
-    console.log(test.dice[0])
-}
 
-function addPlayerToRoom(id) {
+async function addPlayerToRoom(id) {
     let isPlayer = isPlayerInRoom(id);
 
     if (!isPlayer.is) {
@@ -35,15 +32,22 @@ function addPlayerToRoom(id) {
             let room = db.get("dice").value()[i]
             if (room.players.length < 5) {
                 let players = db.get("dice").find({id: i}).value().players
+                let msg = `You are added in room ${i} with:`
+                await players.forEach( async (player) => {
+                /////////HERE//////////////!!!!!!!!!!!!!!!!!!!!!!!!
+                    await login.getUserById(parseInt(player), user, ()=> {
+                        msg += "\n"+user.username;
+                    })
+                })
                 players.push(id);
                 db.get("dice").find({id: i}).update({'players': p => p=players}).write()
                 console.log(`Player ID: ${id} added in room ${i}`)
-                //bot.sendMessage(`You are added in room ${i} with ${players.length-1} other players.`)
+                bot.sendMessageById(id, msg)
                 return true
             }
         }
     } else {
-        //bot.sendMessage(`You are already in room ${isPlayer.room}`)
+        bot.sendMessageById(id, `You are already in room ${isPlayer.room}`)
     }
 }
 
@@ -59,10 +63,12 @@ function removePlayerFromRoom(id) {
                 players.remove(id);
                 db.get("dice").find({id: i}).update({'players': p => p=players}).write()
                 console.log(`Player ID: ${id} removed from room ${i}`)
-                //bot.sendMessage(`You are removed from room ${i}.`)
+                bot.sendMessageById(id, `You are removed from room ${i}.`)
                 return true
             }
         }
+    } else { 
+        bot.sendMessageById(id, `You are not playing yet. Type /playDice to start playing.`)
     }
 }
 
